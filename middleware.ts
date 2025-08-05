@@ -1,6 +1,21 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { unauthorized } from 'next/navigation';
 
-export default clerkMiddleware();
+const publicRoutes = createRouteMatcher([
+  '/api/uploadThing',
+])
+
+export default clerkMiddleware(async(auth, req)=>{
+  // publicRoutes : ["/api/uploadThing"]
+  if(publicRoutes(req)){
+    return;
+  }
+  // const {userId} = await auth();
+  // if(!userId){
+  //   return new Response('unauthorized')
+  // }
+  // session.protect();
+});
 
 export const config = {
   matcher: [
