@@ -1,5 +1,7 @@
 "use client";
 
+import axios from "axios";
+
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form"; 
@@ -26,6 +28,8 @@ import{Input} from "@/components/ui/input";
 import{Button} from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { FileUpload } from "@/components/file-upload";
+import { useRouter } from "next/navigation";
+// import { useRouter } from "next/router";
 
 const formSchema = z.object({
     name:z.string().min(1, {
@@ -39,6 +43,7 @@ const formSchema = z.object({
 export const InitialModal=()=>{
 
     const [isMounted, setIsMounted] = useState(false);
+    const router=useRouter();
     useEffect(()=>{
         setIsMounted(true);
     })
@@ -54,12 +59,21 @@ export const InitialModal=()=>{
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async(values: z.infer<typeof formSchema>)=>{
-        console.log(values);
+        try{
+            await axios.post("/api/server", values);
+            form.reset();
+            router.refresh();
+            window.location.reload();
+        }
+        catch(error){
+            console.log(error);
+        }
     }
     if(!isMounted){
         return null;
     }
     return(
+        // <div className="flex items-center justify-center"> 
         <Dialog open ={true}>
             <DialogContent className = "bg-white text-black p-0 overflow-hidden">
                 <DialogHeader className="pt-8 px6">
@@ -123,5 +137,6 @@ export const InitialModal=()=>{
                 </Form>
             </DialogContent>
         </Dialog>
+        // </div>
     )
 }
